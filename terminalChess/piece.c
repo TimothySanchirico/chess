@@ -1,6 +1,5 @@
 #include "piece.h"
 
-
 void init_pawn(piece * p){
 	
 }
@@ -43,3 +42,35 @@ void init_pieces(piece * p){
 }
 
 
+
+piece * check_reachability(int turn, unsigned int r, unsigned int c, unsigned int type, piece* team){
+	int i;
+	for(i = 0; i < 16; i++){
+		if(type == team[i].type){
+			if(type_can_move(turn, type, team[i].x, team[i].y, r, c)){
+				return &(team[i]);
+			}
+		}
+	}
+	return NULL;	
+}
+
+int type_can_move(int team, unsigned int type, unsigned int start_x, unsigned int start_y, unsigned int end_x, unsigned int end_y){
+	switch(type){
+		case(PAWN):
+			if( (end_y == (team == WHITE ? start_y - 1 : start_y + 1) ) && (start_x == end_x) )
+				return 1;
+			break;	
+
+	}
+
+	return 0;
+}
+
+void move_piece(piece***  b, piece * move, unsigned int r, unsigned int c){
+	b[move->x][move->y] = NULL;
+	move->x = r;
+	move->y = c;
+	b[r][c] = move;
+
+}

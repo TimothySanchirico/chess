@@ -41,7 +41,7 @@ void print_piece(board b, int x, int y) {
 				printf(" P");
 				break;
 			case(KNIGHT):
-				printf(" K");
+				printf(" N");
 				break;
 			case(BISHOP):
 				printf(" B");
@@ -74,9 +74,13 @@ void init_board(board b, piece * p){
 	/* Init Rows with pieces seperately */
 	for(i = 0; i < 8; i++){
 		b[i][0] = &p[i];
+		p[i].x = i;
+		p[i].y = 0;
 	}
 	/* Init Rows with pieces seperately */
 	for(i = 0; i < 8; i++){
+		p[i+8].x = i;
+		p[i+8].y = 1;
 		b[i][1] = &p[i+8];
 	}
 
@@ -88,12 +92,47 @@ void init_board(board b, piece * p){
 	}
 
 	for(i = 0; i < 8; i++){
+		p[i+16].x = i;
+		p[i+16].y = 6;
 		b[i][6] = &p[i+16];
 	}
 	
 	for(i = 0; i < 8; i++){
+		p[i+24].x = i;
+		p[i+24].y = 7;
 		b[i][7] = &p[i+24];
 	}
 
 }
+
+/* n includes the null char */
+void * parse_cmnd(char * cm, int n, unsigned int *r, unsigned int * c, unsigned int * type){
+	/* Because of how we store the board, row 0 corresponds to board row 8 */
+	*r = 8 - ((int)cm[n-2] - 48);
+	*c = (int)cm[n-3] - 97;
+	if(n == 4){
+		switch(cm[0]){
+			case('k'):
+				*type = KING;
+				break;
+			case('q'):
+				*type = QUEEN;
+				break;
+			case('r'):
+				*type = ROOK;
+				break;
+			case('n'):
+				*type = KNIGHT;
+				break;
+			case('b'):
+				*type = BISHOP;
+				break;
+		
+
+		}
+	}
+	else
+		*type = PAWN;	
+}
+
 

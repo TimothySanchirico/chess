@@ -50,7 +50,7 @@ int main(void){
 		if(r >= 8 || c >= 8) continue;
 		/* Now we know what kind of piece, and the final destination */	
 		/* Make sure there is a piece of the specified type that can get here */
-		if( (move = check_reachability(turn, c, r, type, (turn%2 == 0 ? black_pieces : white_pieces))) != NULL)
+		if( (move = check_reachability(turn, c, r, type, (turn%2 == 0 ? black_pieces : white_pieces), b)) != NULL)
 			move_piece(b, move, c, r);
 		else continue;
 	

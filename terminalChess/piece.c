@@ -182,7 +182,7 @@ int knight_can_move(piece *** b, int team, unsigned int type, unsigned int start
 		if(start_x == end_x +1) return 1;
 		else if(start_x == end_x -1) return 1;
 	}
-	else if(start_y == end_y + 2){
+	else if(start_y == end_y - 2){
 		goto x_checks;
 	}
 	return 0;

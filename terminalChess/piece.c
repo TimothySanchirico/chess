@@ -201,9 +201,10 @@ int check_diagnol(piece *** b, unsigned int start_x, unsigned int start_y, unsig
 			do{
 				start_x -= step;
 				start_y -= step;
-
+				
+				if(start_x == end_x) break;
 				if(b[start_x][start_y] != NULL) return 0;
-
+				
 			}while(start_x != end_x + 1);				
 		}
 		else {
@@ -213,6 +214,7 @@ int check_diagnol(piece *** b, unsigned int start_x, unsigned int start_y, unsig
 				start_x -= step;
 				start_y += step;
 
+				if(start_x == end_x) break;
 				if(b[start_x][start_y] != NULL) return 0;
 
 			}while(start_x != end_x + 1);				
@@ -225,6 +227,7 @@ int check_diagnol(piece *** b, unsigned int start_x, unsigned int start_y, unsig
 				start_x += step;
 				start_y -= step;
 
+				if(start_x == end_x) break;
 				if(b[start_x][start_y] != NULL) return 0;
 
 			}while(start_x != end_x - 1);				
@@ -236,6 +239,7 @@ int check_diagnol(piece *** b, unsigned int start_x, unsigned int start_y, unsig
 				start_x += step;
 				start_y += step;
 
+				if(start_x == end_x) break;
 				if(b[start_x][start_y] != NULL) return 0;
 
 			}while(start_x != end_x - 1);				
@@ -269,6 +273,103 @@ int check_horizontal(piece *** b,unsigned int start_x, unsigned int start_y, uns
 	}
 	
 	return 1;
+	
+}
+
+
+int check_check(piece ***b, piece * p, piece * myteam, piece * enemy){
+	
+	piece * king;
+	int i;
+	for(i =0; i < 16; i++){
+		if(myteam[i].type == KING){
+			king = &myteam[i];
+		}
+	}
+
+
+	for(i = 0; i < 16; i++){
+		if(enemy[i].dead == 0){
+			if(type_can_attack(b, &enemy[i], king)){
+				return 1;
+			}	
+
+		}
+	}
+
+
+	return 0;
+
+	
+}
+
+/* pass in a dummy piece with x and y set */
+int check_coord(piece ***b, piece * dummy, piece * enemy){
+
+	int i;	
+	for(i = 0; i < 16; i++){
+		if(enemy[i].dead == 0){
+			if(type_can_attack(b, &enemy[i], dummy)){
+				return 1;
+			}	
+
+		}
+	}
+
+
+	return 0;
+
+	
+}
+
+
+int type_can_attack(piece *** b, piece * p, piece * target){
+	switch(p->type){
+		case(PAWN):
+			return pawn_can_attack(b, p, target);
+		case(BISHOP):
+			return bishop_can_attack(b, p, target);
+		case(ROOK):
+			return rook_can_attack(b, p, target);
+		case(KNIGHT):
+			return knight_can_attack(b, p, target);
+		case(QUEEN):
+			return queen_can_attack(b, p, target);
+		case(KING):
+			return king_can_attack(b, p, target);
+				
+
+	}
+
+	return 0;
+
+}
+
+int pawn_can_attack(piece *** b, piece * p, piece * target){
+	if(target->y == (p->team ? p->y -1 : p->y + 1) && (p->x == (target->x + 1) || p->x == (target->x - 1) ) )
+		return 1;
+	else
+		return 0;
+}
+
+int bishop_can_attack(piece *** b, piece * p, piece * target){
+	return check_diagnol(b, p->x, p->y, target->x, target->y);
+}
+
+int king_can_attack(piece *** b, piece * p, piece * target){
+	return king_can_move(b, 60, 0, p->x, p->y, target->x, target->y);
+}
+
+int queen_can_attack(piece *** b, piece * p, piece * target){
+	return queen_can_move(b, 0, 0, p->x, p->y, target->x, target->y);
+}
+
+int rook_can_attack(piece *** b, piece * p, piece * target){
+	return rook_can_move(b, 0, 0, p->x, p->y, target->x, target->y);
+}
+
+int knight_can_attack(piece *** b, piece * p, piece * target){
+	return knight_can_move(b, 0, 0, p->x, p->y, target->x, target->y);
 	
 }
 

@@ -46,12 +46,74 @@ int main(void){
 		rd_sz = getline(&cmnd, &n, stdin);
 		cmnd[rd_sz - 1] = '\0'; /* Override the newline with null */
 		parse_cmnd(cmnd, rd_sz, &r, &c, &type);	
-
+		
 		if(r >= 8 || c >= 8) continue;
 		/* Now we know what kind of piece, and the final destination */	
 		/* Make sure there is a piece of the specified type that can get here */
-		if( (move = check_reachability(turn, c, r, type, (turn%2 == 0 ? black_pieces : white_pieces), b)) != NULL)
+		if( (move = check_reachability(turn, c, r, type, (turn%2 == 0 ? black_pieces : white_pieces), b)) != NULL){
+			/* Make sure moving wouldn't put us in check */
+			if(move->type != KING){
+
+				/* If we are taking an enemy piece, take that into account
+ * 				when considering if we will be in check */
+				if(b[c][r] != NULL) b[c][r]->dead = 1;
+				
+				/* Simulate having moved to check if we'd still be in check */
+				b[move->x][move->y] = NULL;
+				piece * temp = b[c][r];
+				b[c][r] = move;
+
+
+				if(check_check(b, move, (turn%2 == 0 ? black_pieces : white_pieces),
+					 (turn%2 == 0 ? white_pieces : black_pieces) )){
+				
+					/* Reset piece */
+					b[move->x][move->y] = move;
+					b[c][r] = temp;
+
+	
+					if(b[c][r] != NULL) b[c][r]->dead = 0;
+					continue;
+
+
+
+				}
+				else {
+					/* Reset board to prep for actual move */
+					b[move->x][move->y] = move;
+					b[c][r] = temp;
+
+				}
+				
+				
+			}
+			else {
+			
+				/* See if the king is tryna move into check */
+				if(b[c][r] != NULL) b[c][r]->dead = 1;
+				piece temp;
+				temp.x = c;
+				temp.y = r;
+				
+				if(check_coord(b, &temp, (turn%2 == 1 ? black_pieces : white_pieces))){
+					if(b[c][r] != NULL) b[c][r]->dead = 0;
+					continue;	
+				}	
+				
+				if(b[c][r] != NULL) b[c][r]->dead = 0;
+			}
+			/* Else make sure the king isn't moving into his own death */	
 			move_piece(b, move, c, r);
+
+
+			/* Check if the other team is in check */
+			if(check_check(b, move, (turn%2 == 0 ? white_pieces : black_pieces),
+				 (turn%2 == 1 ? white_pieces : black_pieces) )){
+			
+				printf((turn%2 == 0 ? "White" : "Black"));
+				printf("is in check!\n");
+			}
+		}
 		else continue;
 	
 		turn = (turn + 1) % 2;

@@ -39,6 +39,7 @@ int main(void){
 	unsigned int r, c, type;
 	piece * move;
 	cmnd = &line[0];
+	int piece_num;
 	/* Play gaem */
 	while(420){
 		/* Swap out with FPGA version of getline() */
@@ -50,7 +51,10 @@ int main(void){
 		if(r >= 8 || c >= 8) continue;
 		/* Now we know what kind of piece, and the final destination */	
 		/* Make sure there is a piece of the specified type that can get here */
-		if( (move = check_reachability(turn, c, r, type, (turn%2 == 0 ? black_pieces : white_pieces), b)) != NULL){
+		if( (piece_num = check_reachability(turn, c, r, type, 
+		(turn%2 == 0 ? black_pieces : white_pieces), b)) != -1){
+
+			move = (turn%2 == 0 ? &black_pieces[piece_num] : &white_pieces[piece_num]);
 			/* Make sure moving wouldn't put us in check */
 			if(move->type != KING){
 

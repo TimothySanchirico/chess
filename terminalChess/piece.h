@@ -29,7 +29,7 @@ void init_pawn(piece * p);
 
 void init_pieces(piece * p);
 
-piece * check_reachability(int turn, unsigned int r, unsigned int c, unsigned int type, piece * team, piece *** b);
+int check_reachability(int turn, unsigned int r, unsigned int c, unsigned int type, piece * team, piece *** b);
 
 void move_piece(piece*** b, piece * move, unsigned int r, unsigned int c);
 
@@ -42,6 +42,5 @@ int check_coord(piece ***b, piece * dummy, piece * enemy);
 int killed_piece(piece *** b, int r, int c, piece * all);
 
 #endif
-
 
 

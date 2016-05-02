@@ -21,6 +21,8 @@ typedef struct piece_t {
 	unsigned int dead;
 	unsigned int x;
 	unsigned int y;
+	unsigned int emp_flag;
+	unsigned int killed;
 } piece;
 
 void init_pawn(piece * p);
@@ -33,5 +35,13 @@ void move_piece(piece*** b, piece * move, unsigned int r, unsigned int c);
 
 int space_occupied(int x, int y, piece * team);
 
+int check_check(piece ***b, piece * p, piece * myteam, piece * enemy);
+
+int check_coord(piece ***b, piece * dummy, piece * enemy);
+
+int killed_piece(piece *** b, int r, int c, piece * all);
+
 #endif
+
+
 

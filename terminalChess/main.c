@@ -46,7 +46,7 @@ int main(void){
 		rd_sz = getline(&cmnd, &n, stdin);
 		cmnd[rd_sz - 1] = '\0'; /* Override the newline with null */
 		parse_cmnd(cmnd, rd_sz, &r, &c, &type);	
-		
+		printf("%s    %d\n", cmnd, (int)rd_sz);	
 		if(r >= 8 || c >= 8) continue;
 		/* Now we know what kind of piece, and the final destination */	
 		/* Make sure there is a piece of the specified type that can get here */
@@ -102,7 +102,8 @@ int main(void){
 				
 				if(b[c][r] != NULL) b[c][r]->dead = 0;
 			}
-			/* Else make sure the king isn't moving into his own death */	
+			int killed = killed_piece(b, c, r, pieces);
+			printf("Killed %d\n", killed);
 			move_piece(b, move, c, r);
 
 

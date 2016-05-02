@@ -10,7 +10,6 @@ void init_pieces(piece * p){
 	for(i = 0; i < 16; i++){
 		p[i].dead = 0;
 		p[i].team = BLACK;
-
 	}
 
 	p[0].type = ROOK;
@@ -23,14 +22,18 @@ void init_pieces(piece * p){
 	p[7].type = ROOK;
 	
 	/* Init them all to pawns */
-	for(i = 8; i < 16; i++)
+	for(i = 8; i < 16; i++){
 		p[i].type = PAWN;
-	
+		p[i].emp_flag = 0;
+	}
 
 	for(i = 16; i < 32; i++){
 		p[i].dead = 0;
 		p[i].team = WHITE;
-		if(i < 24) p[i].type = PAWN;
+		if(i < 24){
+			p[i].type = PAWN;
+			p[i].emp_flag = 0;
+		}
 	}
 
 	p[24].type = ROOK;
@@ -109,13 +112,16 @@ void move_piece(piece***  b, piece * move, unsigned int r, unsigned int c){
 int pawn_can_move(piece *** b, int team, unsigned int type, unsigned int start_x, unsigned int start_y, unsigned int end_x, unsigned int end_y){
 
 	/*TODO Empassant*/
+	/* Check if second row out from opposing team and if Empassant Flag is set on the opposing teams piece */
 
 	/* If the space is occupied, see if its a diaganol space we can take, otherwise we can't go to an occupied space */
 	if(b[end_x][end_y] != NULL){
 		if(b[end_x][end_y]->team != team){
 			if(end_y == (team == WHITE ? start_y - 1 : start_y + 1) ){
-				if(end_x == start_x + 1 || end_x == start_x - 1)
+				if(end_x == start_x + 1 || end_x == start_x - 1){
+					b[start_x][start_y]->emp_flag = 0;
 					return 1; 
+				}
 				else return 0;
 			}
 			else return 0;
@@ -125,12 +131,28 @@ int pawn_can_move(piece *** b, int team, unsigned int type, unsigned int start_x
 	}
 					
 	/* Make sure the space isnt occupied */
-	else if( (end_y == (team == WHITE ? start_y - 1 : start_y + 1) ) && (start_x == end_x) )
+	else if( (end_y == (team == WHITE ? start_y - 1 : start_y + 1) ) && (start_x == end_x) ){
+		b[start_x][start_y]->emp_flag = 0;
 		return 1;
+	}
 			
 	/* If we're still at the start row we can move two */
-	else if (start_y == (team == WHITE ? 6 : 1) && (end_y == (team == WHITE ? start_y - 2 : start_y + 2) ) && (start_x == end_x) )
+	else if (start_y == (team == WHITE ? 6 : 1) && (end_y == (team == WHITE ? start_y - 2 : start_y + 2) )
+	 && (start_x == end_x) ){
+		b[start_x][start_y]->emp_flag = 1;
 		return 1;
+
+	}/* Empassant impl */
+	else if (start_y == (team == WHITE ? 3 : 4) && end_y == (team == WHITE ? start_y -1 : start_y + 1)
+	&& (start_x == (end_x +1) || start_x == (end_x -1) ) &&
+	(b[end_x][team == WHITE ? 3 : 4] != NULL)){
+		if( (b[end_x][team == WHITE ? 3 : 4]->emp_flag) && (b[end_x][end_y] == NULL)) {
+			b[end_x][team == WHITE ? 3 : 4]->killed = 1;
+			return 1;
+		}
+		else
+			return 0;
+	}
 	else
 		return 0;
 
@@ -373,4 +395,29 @@ int knight_can_attack(piece *** b, piece * p, piece * target){
 	
 }
 
+
+int killed_piece(piece *** b, int r, int c, piece * all){
+	piece * temp = b[r][c];
+	int i, j;
+	if(temp == NULL){
+		for(i = 0; i < 8; i++){
+			for(j = 0; j < 8; j++){
+				if(b[i][j] != NULL){
+					if(b[i][j]->killed){
+						temp = b[i][j];
+						b[i][j] = NULL;
+					}
+				}
+			}
+		}
+	}
+	if(temp == NULL) return -1;
+	for(i = 0; i < 32; i++){
+		if(temp == &all[i])
+			return i;
+	}
+		
+	return -1;
+
+}
 

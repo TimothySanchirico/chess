@@ -108,6 +108,18 @@ int main(void){
 			}
 			int killed = killed_piece(b, c, r, pieces);
 			printf("Killed %d\n", killed);
+			
+			/* Check if we are castling */
+			if(move->type == KING && c == (c > move->x ? move->x + 2 : move->x - 2)){
+				if(turn == WHITE){
+					if(c > move->x) printf("White kingside castle\n");
+					else printf("White queenside castle\n"); 
+				}
+				else {
+					if(c > move->x) printf("Black kingside castle\n");
+					else printf("Black queenside castle\n"); 
+				}
+			}
 			move_piece(b, move, c, r);
 
 

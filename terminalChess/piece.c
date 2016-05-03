@@ -183,7 +183,28 @@ int king_can_move(piece *** b, int team, unsigned int type, unsigned int start_x
 	if( ( (start_x == end_x + 1) || (start_x == end_x -1) || (start_x == end_x) ) &&
 			( (start_y == end_y + 1) || (start_y == end_y - 1 ) || (start_y == end_y)) )
 		return queen_can_move(b, team, type, start_x, start_y, end_x, end_y);
-
+	/* King Side castling (Doesn't check if the king is currently in or moving through check) */
+	else if(start_y == (team == WHITE ? 7 : 0) && start_x == 4 && end_y == start_y && end_x == start_x + 2 &&
+	b[5][(team == WHITE ? 7 : 0)] == NULL && b[6][team == WHITE ? 7 : 0] == NULL
+	&& b[7][team == WHITE ? 7 : 0] != NULL){
+		if(b[7][team == WHITE ? 7 : 0]->type == ROOK){
+			b[5][team == WHITE ? 7 : 0] = b[7][team == WHITE ? 7 : 0];
+			b[7][team == WHITE ? 7 : 0] = NULL;
+			return 1;
+		}
+		else return 0;
+	}
+	/* Queen Side Castling */
+	else if(start_y == (team == WHITE ? 7 : 0) && start_x == 4 && end_y == start_y && end_x == start_x - 2 &&
+	b[3][(team == WHITE ? 7 : 0)] == NULL && b[2][team == WHITE ? 7 : 0] == NULL
+	&& b[1][team == WHITE ? 7 : 0] == NULL && b[0][team == WHITE ? 7 : 0] != NULL){
+		if(b[0][team == WHITE ? 7 : 0]->type == ROOK){
+			b[3][team == WHITE ? 7 : 0] = b[0][team == WHITE ? 7 : 0];
+			b[0][team == WHITE ? 7 : 0] = NULL;
+			return 1;
+		}
+		else return 0;
+	}	
 	else return 0;
 
 }
@@ -379,7 +400,12 @@ int bishop_can_attack(piece *** b, piece * p, piece * target){
 }
 
 int king_can_attack(piece *** b, piece * p, piece * target){
-	return king_can_move(b, 60, 0, p->x, p->y, target->x, target->y);
+	unsigned int start_x = p->x, start_y = p->y, end_x = target->x, end_y = target->y;
+
+	if( ( (start_x == end_x + 1) || (start_x == end_x -1) || (start_x == end_x) ) &&
+			( (start_y == end_y + 1) || (start_y == end_y - 1 ) || (start_y == end_y)) )
+		return queen_can_move(b, p->team, 0, start_x, start_y, end_x, end_y);
+	else return 0;
 }
 
 int queen_can_attack(piece *** b, piece * p, piece * target){
